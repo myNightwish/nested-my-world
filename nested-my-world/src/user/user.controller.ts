@@ -5,18 +5,14 @@ import {
   HttpStatus,
   Post,
 } from '@nestjs/common';
-import { AuthService } from '../auth/auth.service';
 import { UserService } from './user.service';
 import { UserDto } from './dto/user.dto';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly authService: AuthService,
-  ) {}
+  constructor(private readonly userService: UserService) {}
 
-  @Post()
+  @Post('/register')
   async createUser(@Body() userDto: UserDto) {
     const user = await this.userService.findByUsername(userDto.username);
     if (user) {

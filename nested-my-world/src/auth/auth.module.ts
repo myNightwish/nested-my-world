@@ -1,16 +1,17 @@
 import { Module } from '@nestjs/common';
 import { AuthService } from './auth.service';
+import { UserService } from '../user/user.service';
 import { AuthController } from './auth.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './jwt.strategy';
-import { UserModule } from '../user/user.module';
-
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from '../user/dto/user.entity';
 @Module({
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, UserService, JwtStrategy],
   controllers: [AuthController],
   imports: [
-    UserModule,
+    TypeOrmModule.forFeature([UserEntity]),
     PassportModule,
     JwtModule.register({
       secret: 'secretkey',

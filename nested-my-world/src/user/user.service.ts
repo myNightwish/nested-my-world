@@ -15,7 +15,9 @@ export class UserService {
   ) {}
 
   async findByUsername(username: string): Promise<UserEntity> {
-    return await this.userRepository.findOne({ username });
+    return await this.userRepository.findOne({
+      where: { username: username },
+    });
   }
 
   async createUser(userDto: UserDto): Promise<UserEntity> {

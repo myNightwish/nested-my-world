@@ -1,5 +1,3 @@
-// User
-
 import { OmitType, PartialType } from '@nestjs/swagger';
 import { UserEntity } from './user.entity';
 

@@ -1,5 +1,3 @@
-// UserEntity
-
 import {
   Entity,
   Column,
