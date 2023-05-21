@@ -1,13 +1,8 @@
-enum TaskStatus {
-  OPEN = 'open',
-  IN_PROGRESS = 'in_progress',
-  DONE = 'done',
-}
+import { TaskStatus } from './task-status.enum';
 
 export class TaskDTO {
-  id: number;
   title: string;
   status: TaskStatus;
-  payment: number;
+  price: number;
   deadline: Date;
 }

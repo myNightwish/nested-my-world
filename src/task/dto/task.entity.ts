@@ -1,19 +1,29 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 import { TaskStatus } from './task-status.enum';
 
 @Entity()
 export class Task {
   @PrimaryGeneratedColumn()
   id: number;
+  @Column()
+  creator: string;
 
-  @Column({ charset: 'utf8mb4' })
+  @Column()
+  taskId: string;
+
+  @Column({ charset: 'utf8mb4', nullable: false })
   title: string;
 
   @Column({ charset: 'utf8mb4' })
-  description: string;
+  type: string;
 
   @Column({ charset: 'utf8mb4' })
-  type: string;
+  description: string;
 
   // 使用String类型的列来存储枚举类型的任务状态值
   @Column({ type: 'varchar', nullable: false, default: TaskStatus.CREATED })
@@ -27,6 +37,9 @@ export class Task {
 
   @Column()
   price: number;
+
+  @Column({ nullable: true })
+  deadline: Date;
 
   @Column()
   publisherId: number;
@@ -46,4 +59,7 @@ export class Task {
     onUpdate: 'CURRENT_TIMESTAMP',
   })
   updateTime: Date;
+
+  @DeleteDateColumn()
+  softDelete: Date;
 }

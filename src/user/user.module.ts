@@ -6,10 +6,12 @@ import { UserEntity } from './dto/user.entity';
 import { UserService } from './user.service';
 import { JwtService, JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from '../share/guards/jwt.strategy';
+import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
+    PassportModule,
     JwtModule.register({
       secret: 'secretKey',
       signOptions: { expiresIn: '1d' },

@@ -1,4 +1,4 @@
-import { Controller, Get, UseGuards } from '@nestjs/common';
+import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 import { UserService } from './user.service';
 import { JwtAuthGuard } from '../share/guards/jwt-auth.guard';
 
@@ -6,10 +6,7 @@ import { JwtAuthGuard } from '../share/guards/jwt-auth.guard';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @UseGuards(JwtAuthGuard)
-  @Get('/identity')
-  async createUser(user: string) {
-    // TODO：
-    console.log('username--4534546', user);
-  }
+  // @UseGuards(JwtAuthGuard)
+  // @Get('/identity')
+  // async createUser(@Request() req) {}
 }
