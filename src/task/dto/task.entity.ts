@@ -41,9 +41,6 @@ export class Task {
   @Column({ nullable: true })
   deadline: Date;
 
-  @Column()
-  publisherId: number;
-
   @Column({ nullable: true })
   receiverId: number;
 

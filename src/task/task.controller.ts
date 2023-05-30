@@ -19,6 +19,7 @@ import { TaskService } from './task.service';
 // import { Controller, Get, UseGuards, Request } from '@nestjs/common';
 // import { UserService } from './user.service';
 import { JwtAuthGuard } from '../share/guards/jwt-auth.guard';
+
 @Controller('tasks')
 export class TaskController {
   constructor(
@@ -119,6 +120,7 @@ export class TaskController {
   }
 
   // 获取任务
+  @UseGuards(JwtAuthGuard)
   @Get('/all')
   async getAllTasks() {
     const res = await this.taskRepository.find();
