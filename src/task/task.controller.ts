@@ -6,7 +6,6 @@ import {
   Post,
   Put,
   Query,
-  UseGuards,
   Request,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,10 +14,6 @@ import { Repository, DeleteResult } from 'typeorm';
 import { Task } from './dto/task.entity';
 import { TaskStatus } from './dto/task-status.enum';
 import { TaskService } from './task.service';
-
-// import { Controller, Get, UseGuards, Request } from '@nestjs/common';
-// import { UserService } from './user.service';
-import { JwtAuthGuard } from '../share/guards/jwt-auth.guard';
 
 @Controller('tasks')
 export class TaskController {
@@ -29,26 +24,28 @@ export class TaskController {
   ) {}
 
   // 新增任务
-  @UseGuards(JwtAuthGuard)
   @Post('/create')
   async createTask(@Body() task: Task, @Request() req) {
     task.taskId = this.taskService.generateUniqueTaskId();
-    task.creator = req.user.userId;
+    task.creator = req.user.username;
     return await this.taskRepository.save(task);
   }
 
   // 修改任务
-  @UseGuards(JwtAuthGuard)
   @Put('/update')
   async updateTask(@Body() task: Task, @Request() req) {
+    if (!task.taskId) {
+      return '更新失败，任务ID不能为空!';
+    }
     const existingTask = await this.taskRepository.findOne({
       where: { taskId: task.taskId },
     });
+
     if (!existingTask) {
       return '更新失败，任务不存在!';
     }
     // existingTask的创建者校验是否是当前用户
-    if (existingTask.creator !== req.user.userId) {
+    if (existingTask.creator !== req.user.username) {
       return '更新失败，无权限修改';
     }
     // existingTask的状态校验是否是未接收
@@ -71,13 +68,13 @@ export class TaskController {
       where: { id: id },
     });
 
-    // if (
-    //   existingTask.status !== TaskStatus.RECEIVED &&
-    //   existingTask.status !== TaskStatus.FREEZED &&
-    //   existingTask.status !== TaskStatus.COMPLETED
-    // ) {
-    //   return '任务已接收，无法修改';
-    // }
+    if (
+      existingTask.status !== TaskStatus.RECEIVED &&
+      existingTask.status !== TaskStatus.FREEZED &&
+      existingTask.status !== TaskStatus.COMPLETED
+    ) {
+      return '任务已接收，无法修改';
+    }
     existingTask.status = TaskStatus.RECEIVED as TaskStatus;
     existingTask.receiverId = receiverId;
     return await this.taskRepository.save(existingTask);
@@ -93,7 +90,6 @@ export class TaskController {
   }
 
   // 删除任务
-  @UseGuards(JwtAuthGuard)
   @Get('/remove/:taskId')
   async deleteTask(@Param('taskId') taskId: string, @Request() req) {
     const existingTask = await this.taskRepository.findOne({
@@ -103,14 +99,19 @@ export class TaskController {
       throw new NotFoundException('删除失败，任务不存在！');
     }
     // existingTask的创建者校验是否是当前用户
-    if (existingTask.creator !== req.user.userId) {
+    console.log(
+      'existingTask.creator',
+      existingTask.creator,
+      req.user.username,
+    );
+    if (existingTask.creator !== req.user.username) {
       throw new NotFoundException('删除失败，无权限修改');
     }
     // // existingTask的状态校验是否已经被接收
     if (TaskStatus.CREATED !== existingTask.status) {
       return '任务状态已经变更，无法删除!';
     }
-    const result: DeleteResult = await this.taskRepository.softDelete({
+    const result: DeleteResult = await this.taskRepository.delete({
       taskId: taskId,
     });
     if (result.affected === 0) {
@@ -120,7 +121,6 @@ export class TaskController {
   }
 
   // 获取任务
-  @UseGuards(JwtAuthGuard)
   @Get('/all')
   async getAllTasks() {
     const res = await this.taskRepository.find();

@@ -4,24 +4,24 @@ import { AuthService } from '../auth/auth.service';
 import { UserController } from './user.controller';
 import { UserEntity } from './dto/user.entity';
 import { UserService } from './user.service';
-import { JwtService, JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from '../share/guards/jwt.strategy';
-import { PassportModule } from '@nestjs/passport';
 
+import { JwtModule } from '@nestjs/jwt';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from 'src/auth/auth.guard';
 @Module({
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
-    PassportModule,
     JwtModule.register({
-      secret: 'secretKey',
-      signOptions: { expiresIn: '1d' },
+      secret: 'maomao',
     }),
   ],
   providers: [
     UserService,
     AuthService,
-    JwtService,
-    JwtStrategy, // JWT 认证策略
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
   ],
   controllers: [UserController],
   exports: [UserService],

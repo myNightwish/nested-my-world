@@ -10,6 +10,7 @@ import { TaskStatus } from './task-status.enum';
 export class Task {
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column()
   creator: string;
 
